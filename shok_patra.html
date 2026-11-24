@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>शोक पत्र — चार प्रतियाँ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@500;600;700&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1a120c;
+      --muted: #5c4a3a;
+      --line: #c4b4a4;
+      --paper: #fffdf8;
+      --accent: #7a1f1f;
+      --panel: #f6f1ea;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #e7e0d6;
+      font-family: "Noto Serif Devanagari", "Nirmala UI", "Mangal", serif;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: minmax(320px, 420px) 1fr;
+      min-height: 100vh;
+    }
+
+    .editor {
+      background: var(--panel);
+      border-right: 1px solid var(--line);
+      padding: 22px 20px 40px;
+      overflow: auto;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 1.55rem;
+      letter-spacing: 0.02em;
+    }
+
+    .lead {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.45;
+    }
+
+    .hero-field {
+      background: #fff;
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 12px 14px 14px;
+      margin-bottom: 16px;
+    }
+
+    .hero-field label {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .hero-field input {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    fieldset {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      margin: 0 0 14px;
+      padding: 12px 12px 8px;
+      background: #fff;
+    }
+
+    legend {
+      padding: 0 6px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      margin: 8px 0 4px;
+      color: var(--muted);
+    }
+
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid #d9cfc4;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font: inherit;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    textarea { min-height: 72px; resize: vertical; }
+
+    .row2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    button {
+      font: inherit;
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+
+    .print-btn {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      flex: 1;
+    }
+
+    .reset-btn {
+      background: #efe7de;
+      color: var(--ink);
+    }
+
+    .hint {
+      margin: 10px 0 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .preview-wrap {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .preview-note {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .scale-box {
+      width: min(100%, 980px);
+    }
+
+    .sheet {
+      width: 297mm;
+      height: 210mm;
+      background: white;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      box-shadow: 0 10px 30px rgba(40, 24, 8, 0.16);
+      transform-origin: top left;
+    }
+
+    .card {
+      border: 1.6mm solid #111;
+      padding: 7mm 8mm 7.5mm;
+      overflow: hidden;
+      background: var(--paper);
+      color: #1c140e;
+      display: flex;
+      flex-direction: column;
+    }
+
+    [contenteditable="true"] {
+      cursor: text;
+      border-radius: 1mm;
+    }
+
+    [contenteditable="true"]:hover {
+      background: rgba(255, 244, 214, 0.35);
+    }
+
+    [contenteditable="true"]:focus {
+      outline: 0.3mm dashed rgba(122, 31, 31, 0.55);
+      outline-offset: 0.6mm;
+      background: rgba(255, 248, 220, 0.55);
+    }
+
+    .card-title {
+      text-align: center;
+      font-family: "Tiro Devanagari Hindi", "Noto Serif Devanagari", serif;
+      font-size: 15pt;
+      font-weight: 700;
+      margin: 0 0 2.2mm;
+      letter-spacing: 0.04em;
+      text-decoration: underline;
+      text-decoration-thickness: 0.45mm;
+      text-underline-offset: 1.5mm;
+    }
+
+    .addr {
+      font-size: 10pt;
+      margin: 0 0 2.4mm;
+      line-height: 1.4;
+    }
+
+    .dots {
+      display: inline-block;
+      border-bottom: 0.25mm dotted #333;
+      min-width: 38mm;
+      padding: 0 1mm;
+    }
+
+    .body-text {
+      font-size: 9.6pt;
+      line-height: 1.42;
+      text-align: justify;
+      margin: 0 0 1.8mm;
+      text-indent: 7mm;
+    }
+
+    .home {
+      text-align: center;
+      font-size: 10.5pt;
+      font-weight: 700;
+      margin: 4.2mm 0 4.6mm;
+    }
+
+    .sign-row {
+      margin-top: 1mm;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 4mm;
+      font-size: 9pt;
+      line-height: 1.4;
+    }
+
+    .sign-row h3 {
+      margin: 0 0 0.6mm;
+      font-size: 10.5pt;
+      font-weight: 700;
+    }
+
+    .sign-row .right { text-align: right; }
+    .sign-row p { margin: 0; white-space: pre-line; }
+
+    @media (max-width: 980px) {
+      .app { grid-template-columns: 1fr; }
+      .editor { border-right: 0; border-bottom: 1px solid var(--line); }
+    }
+
+    @media print {
+      body { background: white; }
+      .editor, .preview-note { display: none !important; }
+      .app { display: block; }
+      .preview-wrap { padding: 0; }
+      .scale-box { width: auto; }
+      .sheet {
+        transform: none !important;
+        box-shadow: none;
+        width: 297mm;
+        height: 210mm;
+      }
+      .card {
+        border: 1.6mm solid #000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      @page { size: A4 landscape; margin: 0; }
+      [contenteditable="true"]:hover,
+      [contenteditable="true"]:focus {
+        outline: none;
+        background: transparent;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="editor">
+      <h1>शोक पत्र</h1>
+      <p class="lead">बाएँ फॉर्म से भरें, या सीधे किसी खाने में शब्द पर क्लिक करके बदलें। एक खाने में «देहांत» या कोई और शब्द बदलेंगे तो बाकी तीन खानों में भी वही बदल जाएगा। काटने की रेखा और लिखावट के बीच जगह छोड़ी गई है।</p>
+
+      <div class="hero-field">
+        <label for="deceasedName">मृतक का नाम</label>
+        <input id="deceasedName" autocomplete="name" placeholder="जैसे: दुखदी बाई नेताम" />
+      </div>
+
+      <fieldset>
+        <legend>मृत्यु का विवरण</legend>
+        <div class="row2">
+          <div>
+            <label for="relation">संबंध</label>
+            <input id="relation" list="relations" />
+            <datalist id="relations">
+              <option value="माता जी"></option>
+              <option value="पिता जी"></option>
+              <option value="दादा जी"></option>
+              <option value="दादी जी"></option>
+              <option value="नाना जी"></option>
+              <option value="नानी जी"></option>
+              <option value="भाई"></option>
+              <option value="बहन"></option>
+              <option value="पति"></option>
+              <option value="पत्नी"></option>
+              <option value="पुत्र"></option>
+              <option value="पुत्री"></option>
+              <option value="चाचा जी"></option>
+              <option value="ताऊ जी"></option>
+              <option value="बुआ जी"></option>
+              <option value="मौसी"></option>
+            </datalist>
+          </div>
+          <div>
+            <label for="honorific">संबोधन</label>
+            <select id="honorific">
+              <option>श्रीमती</option>
+              <option>श्री</option>
+              <option>स्व.</option>
+              <option>कु.</option>
+              <option value="">कोई नहीं</option>
+            </select>
+          </div>
+        </div>
+        <div class="row2">
+          <div>
+            <label for="deathDate">देहांत की तारीख</label>
+            <input id="deathDate" placeholder="24/11/2026" />
+          </div>
+          <div>
+            <label for="deathDay">दिन</label>
+            <select id="deathDay">
+              <option>सोमवार</option>
+              <option selected>मंगलवार</option>
+              <option>बुधवार</option>
+              <option>गुरुवार</option>
+              <option>शुक्रवार</option>
+              <option>शनिवार</option>
+              <option>रविवार</option>
+            </select>
+          </div>
+        </div>
+        <label for="ceremonyName">कर्म का नाम</label>
+        <input id="ceremonyName" list="ceremonies" />
+        <datalist id="ceremonies">
+          <option value="तिजनाहवन"></option>
+          <option value="तेरहवीं"></option>
+          <option value="दशगात्र"></option>
+          <option value="चौथा"></option>
+          <option value="अंतिम संस्कार"></option>
+        </datalist>
+        <div class="row2">
+          <div>
+            <label for="ceremonyDate">कर्म की तारीख</label>
+            <input id="ceremonyDate" placeholder="26/11/2026" />
+          </div>
+          <div>
+            <label for="ceremonyDay">दिन</label>
+            <select id="ceremonyDay">
+              <option>सोमवार</option>
+              <option>मंगलवार</option>
+              <option>बुधवार</option>
+              <option selected>गुरुवार</option>
+              <option>शुक्रवार</option>
+              <option>शनिवार</option>
+              <option>रविवार</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>पता और निवास</legend>
+        <div class="row2">
+          <div>
+            <label for="addresseeTitle">संबोधन (ऊपर की पंक्ति)</label>
+            <input id="addresseeTitle" />
+          </div>
+          <div>
+            <label for="addresseeName">जिसके नाम पत्र है</label>
+            <input id="addresseeName" placeholder="खाली छोड़ सकते हैं" />
+          </div>
+        </div>
+        <label for="addresseeVillage">उनका ग्राम</label>
+        <input id="addresseeVillage" placeholder="खाली छोड़ सकते हैं" />
+        <label for="homeVillage">निज निवास ग्राम</label>
+        <input id="homeVillage" />
+      </fieldset>
+
+      <fieldset>
+        <legend>परिवार के नाम</legend>
+        <label for="mourners">शोकाकुल (बायाँ हिस्सा)</label>
+        <textarea id="mourners"></textarea>
+        <label for="signatories">विनीत (दायाँ हिस्सा)</label>
+        <textarea id="signatories"></textarea>
+      </fieldset>
+
+      <div class="actions">
+        <button class="print-btn" type="button" id="printBtn">प्रिंट करें (4 प्रतियाँ)</button>
+        <button class="reset-btn" type="button" id="resetBtn">मूल पाठ</button>
+      </div>
+      <p class="hint">प्रिंट संवाद में कागज़ A4 और दिशा Landscape रखें। हाशिये None या Minimum रखें, ताकि चारों खाने एक पृष्ठ पर आएँ।</p>
+    </aside>
+
+    <main class="preview-wrap">
+      <p class="preview-note">किसी भी खाने में क्लिक करके पूरा पत्र बदलें। बदलाव चारों खानों में साथ दिखेगा। मोटी काली रेखा के बीच से कैंची चलाएँ — पृष्ठ चार बराबर टुकड़ों में कटेगा।</p>
+      <div class="scale-box" id="scaleBox">
+        <div class="sheet" id="sheet"></div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const DEFAULTS = {
+      deceasedName: "दुखदी बाई नेताम",
+      relation: "माता जी",
+      honorific: "श्रीमती",
+      deathDate: "24/11/2026",
+      deathDay: "मंगलवार",
+      ceremonyName: "तिजनाहवन",
+      ceremonyDate: "26/11/2026",
+      ceremonyDay: "गुरुवार",
+      addresseeTitle: "श्रीमान",
+      addresseeName: "",
+      addresseeVillage: "",
+      homeVillage: "पदगुडा",
+      mourners: "प्रहलाद, शीतल गनेश्वर, लक्की,\nमोहित एवं समस्त नेताम परिवार",
+      signatories: "धनराज नेताम, चेतन नेताम\nपृथ्वी नेताम, कौशल नेताम"
+    };
+
+    const FIELDS = Object.keys(DEFAULTS);
+    const STORAGE_KEY = "shok-patra-fields-v2";
+
+    function load() {
+      let saved = {};
+      try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch (e) {}
+      const data = { ...DEFAULTS, ...saved };
+      for (const key of FIELDS) {
+        const el = document.getElementById(key);
+        if (el) el.value = data[key] ?? "";
+      }
+    }
+
+    function read() {
+      const data = {};
+      for (const key of FIELDS) data[key] = document.getElementById(key).value.trim();
+      return data;
+    }
+
+    function blankLine(field, value) {
+      const text = value && value.length ? escapeHtml(value) : "&nbsp;";
+      return `<span class="dots" data-field="${field}">${text}</span>`;
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function cardHtml(d) {
+      const nameHtml = `<strong data-field="deceasedName">${escapeHtml(d.deceasedName || "………………")}</strong>`;
+      const whoHtml = `<span data-field="relation">${escapeHtml(d.relation)}</span> <span data-field="honorific">${escapeHtml(d.honorific)}</span>`;
+      return `
+        <article class="card">
+          <h2 class="card-title" contenteditable="true" data-sync="title" spellcheck="false">शोक – पत्र</h2>
+          <p class="addr" contenteditable="true" data-sync="addr" spellcheck="false"><span data-field="addresseeTitle">${escapeHtml(d.addresseeTitle || "श्रीमान")}</span> ${blankLine("addresseeName", d.addresseeName)} ग्राम ${blankLine("addresseeVillage", d.addresseeVillage)}</p>
+          <p class="body-text" contenteditable="true" data-sync="body1" spellcheck="false">अत्यन्त दुःख के साथ सूचित किया करना पड़ रहा है कि मेरे ${whoHtml} ${nameHtml} का देहांत दिनांक <span data-field="deathDate">${escapeHtml(d.deathDate || "……")}</span> दिन <span data-field="deathDay">${escapeHtml(d.deathDay || "……")}</span> को हो गया। जिनका <span data-field="ceremonyName">${escapeHtml(d.ceremonyName || "तिजनाहवन")}</span> दिनांक <span data-field="ceremonyDate">${escapeHtml(d.ceremonyDate || "……")}</span> दिन <span data-field="ceremonyDay">${escapeHtml(d.ceremonyDay || "……")}</span> को सम्पन्न होगा।</p>
+          <p class="body-text" contenteditable="true" data-sync="body2" spellcheck="false">अतः आप सहपरिवार पधार कर शोकाकुल परिवार को सांत्वना प्रदान कर हमें अनुग्रहित करें।</p>
+          <p class="home" contenteditable="true" data-sync="home" spellcheck="false">निज निवास ग्राम – <span data-field="homeVillage">${escapeHtml(d.homeVillage || "……")}</span></p>
+          <div class="sign-row">
+            <div>
+              <h3 contenteditable="true" data-sync="mournersHead" spellcheck="false">शोकाकुल</h3>
+              <p contenteditable="true" data-sync="mourners" data-field="mourners" spellcheck="false">${escapeHtml(d.mourners || "")}</p>
+            </div>
+            <div class="right">
+              <h3 contenteditable="true" data-sync="vineetHead" spellcheck="false">विनीत</h3>
+              <p contenteditable="true" data-sync="signatories" data-field="signatories" spellcheck="false">${escapeHtml(d.signatories || "")}</p>
+            </div>
+          </div>
+        </article>`;
+    }
+
+    let writing = false;
+
+    function setField(key, value) {
+      document.querySelectorAll(`[data-field="${key}"]`).forEach((el) => {
+        if ((el.textContent || "") !== value) el.textContent = value;
+      });
+    }
+
+    function applySavedBlocks(blocks) {
+      if (!blocks) return;
+      for (const [key, html] of Object.entries(blocks)) {
+        document.querySelectorAll(`[data-sync="${key}"]`).forEach((el) => {
+          el.innerHTML = html;
+        });
+      }
+    }
+
+    function snapshotBlocks() {
+      const blocks = {};
+      document.querySelectorAll("[data-sync]").forEach((el) => {
+        if (!(el.dataset.sync in blocks)) blocks[el.dataset.sync] = el.innerHTML;
+      });
+      return blocks;
+    }
+
+    function save(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        fields: data || read(),
+        blocks: snapshotBlocks()
+      }));
+    }
+
+    function render() {
+      const data = read();
+      document.getElementById("sheet").innerHTML = cardHtml(data).repeat(4);
+      fitPreview();
+    }
+
+    function fitPreview() {
+      const box = document.getElementById("scaleBox");
+      const sheet = document.getElementById("sheet");
+      const pxPerMm = 96 / 25.4;
+      const naturalW = 297 * pxPerMm;
+      const naturalH = 210 * pxPerMm;
+      const scale = Math.min(1, box.clientWidth / naturalW);
+      sheet.style.transform = `scale(${scale})`;
+      box.style.height = `${naturalH * scale}px`;
+    }
+
+    function fieldsIn(block) {
+      const list = [];
+      if (block.dataset.field) list.push(block);
+      block.querySelectorAll("[data-field]").forEach((el) => list.push(el));
+      return list;
+    }
+
+    document.getElementById("sheet").addEventListener("input", (event) => {
+      const block = event.target.closest("[data-sync]");
+      if (!block || writing) return;
+      writing = true;
+      const html = block.innerHTML;
+      document.querySelectorAll(`[data-sync="${block.dataset.sync}"]`).forEach((other) => {
+        if (other !== block) other.innerHTML = html;
+      });
+      fieldsIn(block).forEach((el) => {
+        const input = document.getElementById(el.dataset.field);
+        if (!input) return;
+        const next = el.innerText.replace(/\u00a0/g, " ").trim();
+        if (input.value !== next) input.value = next;
+      });
+      writing = false;
+      save();
+    });
+
+    document.getElementById("printBtn").addEventListener("click", () => window.print());
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      localStorage.removeItem(STORAGE_KEY);
+      for (const key of FIELDS) document.getElementById(key).value = DEFAULTS[key];
+      render();
+      save();
+      document.getElementById("deceasedName").focus();
+    });
+
+    for (const key of FIELDS) {
+      const input = document.getElementById(key);
+      const push = () => {
+        if (writing) return;
+        writing = true;
+        setField(key, input.value.trim());
+        writing = false;
+        save();
+      };
+      input.addEventListener("input", push);
+      input.addEventListener("change", push);
+    }
+
+    window.addEventListener("resize", fitPreview);
+
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch (e) {}
+    if (saved.fields) {
+      const data = { ...DEFAULTS, ...saved.fields };
+      for (const key of FIELDS) {
+        const el = document.getElementById(key);
+        if (el) el.value = data[key] ?? "";
+      }
+    } else {
+      load();
+    }
+    render();
+    if (saved.blocks) applySavedBlocks(saved.blocks);
+    fitPreview();
+    document.getElementById("deceasedName").focus();
+    document.getElementById("deceasedName").select();
+  </script>
+</body>
+</html>
